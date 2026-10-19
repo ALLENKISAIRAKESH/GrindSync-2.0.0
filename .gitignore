@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+frontend/dist/
+backend/dist/
+shared/dist/
+
+# Environment & local credentials
+.env
+.env.local
+*.local
+
+# Local database & logs
+*.db
+*.sqlite
+*.sqlite-journal
+*.log
+
+# Non-shareable internal agent materials
+agent/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

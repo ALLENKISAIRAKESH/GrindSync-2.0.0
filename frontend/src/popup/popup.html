@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrindSync</title>
+  <link rel="stylesheet" href="./popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <img src="/icons/logo.png" alt="GrindSync Logo" class="brand-logo-img" />
+        <div>
+          <h1 class="title">GrindSync</h1>
+          <span class="subtitle">DSA Solution Sync</span>
+        </div>
+      </div>
+      <div id="agent-badge" class="badge badge-disconnected">
+        <span class="badge-dot"></span>
+        <span id="agent-status-text">Disconnected</span>
+      </div>
+    </header>
+
+    <!-- ========== MAIN VIEW ========== -->
+    <div id="view-main">
+      <!-- Agent Connection Card -->
+      <section class="card agent-card">
+        <div class="card-header">
+          <span class="card-title">Local Agent</span>
+          <button id="btn-refresh" class="btn-icon" title="Check connection">↻</button>
+        </div>
+        <div class="agent-details">
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span id="agent-details-status" class="status-val disconnected">Not Connected</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Endpoint:</span>
+            <span id="agent-endpoint" class="endpoint-val">127.0.0.1:4578</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Toggles -->
+      <section class="card toggles-card">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Auto Sync</span>
+            <span class="toggle-desc">Capture accepted submissions</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-auto-sync" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">AI Explanation</span>
+            <span class="toggle-desc">Generate README insights</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-ai" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Auto Push</span>
+            <span class="toggle-desc">Push commits to remote</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-auto-push" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Sync All Past Submissions Card -->
+      <section class="card sync-all-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08)); border: 1px solid rgba(168, 85, 247, 0.25);">
+        <div class="card-header" style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <span class="card-title">⚡ Platform Sync Tracker</span>
+          <div style="display: flex; gap: 4px;">
+            <button id="tab-platform-leetcode" class="btn-pill active" style="font-size: 10px; padding: 2px 8px; border-radius: 12px; border: 1px solid #6366f1; background: #6366f1; color: white; cursor: pointer;">LeetCode</button>
+            <button id="tab-platform-gfg" class="btn-pill" style="font-size: 10px; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15); background: transparent; color: var(--color-text-secondary); cursor: pointer;">GFG</button>
+          </div>
+        </div>
+
+        <!-- Active Context & Situation Banner -->
+        <div id="tab-context-banner" style="margin-bottom: 8px; padding: 5px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); font-size: 11px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 215px;">
+            <span style="color: var(--color-text-secondary);">Active: </span>
+            <span id="tab-context-text" style="color: #818cf8; font-weight: 600;">Detecting...</span>
+          </div>
+          <span id="tab-context-badge" style="font-size: 9px; padding: 1px 6px; border-radius: 8px; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); white-space: nowrap;">● Live</span>
+        </div>
+
+        <!-- 3-Column Metric Stats Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; text-align: center;">
+          <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 6px 4px; border: 1px solid rgba(255, 255, 255, 0.06);">
+            <div style="font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Solved</div>
+            <div id="stat-total-solved" style="font-size: 16px; font-weight: 700; color: #60a5fa; margin-top: 2px;">--</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 6px 4px; border: 1px solid rgba(255, 255, 255, 0.06);">
+            <div style="font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Pushed</div>
+            <div id="stat-already-pushed" style="font-size: 16px; font-weight: 700; color: #4ade80; margin-top: 2px;">--</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 6px 4px; border: 1px solid rgba(255, 255, 255, 0.06);">
+            <div style="font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Pending</div>
+            <div id="stat-need-to-push" style="font-size: 16px; font-weight: 700; color: #facc15; margin-top: 2px;">--</div>
+          </div>
+        </div>
+
+        <button id="btn-sync-all" class="btn btn-primary" style="width: 100%; justify-content: center; display: flex; align-items: center; gap: 6px;">
+          <span>🔄 Sync Solved Problems</span>
+        </button>
+        <div id="sync-all-status" class="save-status" style="margin-top: 6px; font-size: 11px; text-align: center; min-height: 16px;"></div>
+      </section>
+
+      <!-- Last Sync Activity -->
+      <section class="card activity-card">
+        <div class="card-header">
+          <span class="card-title">Last Activity</span>
+          <span id="activity-timestamp" class="timestamp">Ready</span>
+        </div>
+        <div id="activity-body" class="activity-body">
+          <p class="empty-state">No submissions synchronized yet. Solve a problem on LeetCode or GeeksforGeeks to get started!</p>
+        </div>
+      </section>
+
+      <!-- Footer Actions -->
+      <footer class="footer">
+        <button id="btn-history" class="btn btn-secondary">📋 History</button>
+        <button id="btn-settings" class="btn btn-secondary">⚙️ Settings</button>
+      </footer>
+    </div>
+
+    <!-- ========== SETTINGS VIEW ========== -->
+    <div id="view-settings" class="hidden">
+      <div class="view-header">
+        <button id="btn-settings-back" class="btn-icon">← Back</button>
+        <span class="view-title">Settings</span>
+      </div>
+
+      <section class="card settings-card">
+        <div class="settings-group">
+          <label class="settings-label" for="input-github-profile">GitHub Profile URL / Username</label>
+          <div style="display: flex; gap: 6px;">
+            <input
+              type="text"
+              id="input-github-profile"
+              class="settings-input"
+              style="flex: 1;"
+              placeholder="https://github.com/ALLENKISAIRAKESH"
+            />
+            <button id="btn-auto-link" class="btn btn-primary" style="padding: 6px 10px; font-size: 11px; white-space: nowrap;">⚡ Auto-Link</button>
+          </div>
+          <span class="settings-hint">Auto-configures <code>My-Solved-Problems_GrindSync</code> with LeetCode & GeeksForGeeks folders.</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-github-token">GitHub Token (Optional - to auto-create repo on GitHub)</label>
+          <div style="display: flex; gap: 6px;">
+            <input
+              type="password"
+              id="input-github-token"
+              class="settings-input"
+              style="flex: 1;"
+              placeholder="ghp_xxxxxxxxxxxx"
+            />
+            <button id="btn-create-remote" class="btn btn-primary" style="padding: 6px 10px; font-size: 11px; white-space: nowrap;">🚀 Create on GitHub</button>
+          </div>
+          <span class="settings-hint">If provided, creates <code>My-Solved-Problems_GrindSync</code> on your GitHub account via API.</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-leetcode-username">LeetCode Username (Optional)</label>
+          <input
+            type="text"
+            id="input-leetcode-username"
+            class="settings-input"
+            placeholder="e.g. your_leetcode_username"
+          />
+          <span class="settings-hint">Used to fetch past accepted problems & statistics.</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-gfg-username">GeeksForGeeks Username (Optional)</label>
+          <input
+            type="text"
+            id="input-gfg-username"
+            class="settings-input"
+            placeholder="e.g. your_gfg_username"
+          />
+          <span class="settings-hint">Used for GeeksForGeeks profile linking.</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-agent-url">Agent URL</label>
+          <input
+            type="text"
+            id="input-agent-url"
+            class="settings-input"
+            placeholder="http://127.0.0.1:4578"
+          />
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-bearer-token">Bearer Token</label>
+          <input
+            type="password"
+            id="input-bearer-token"
+            class="settings-input"
+            placeholder="grindsync-local-dev-token"
+          />
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-repo-path">Repository Path</label>
+          <input
+            type="text"
+            id="input-repo-path"
+            class="settings-input"
+            placeholder="/path/to/your/dsa-repo"
+          />
+          <span class="settings-hint">Absolute path to your local Git repository</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="input-commit-format">Commit Format</label>
+          <input
+            type="text"
+            id="input-commit-format"
+            class="settings-input"
+            placeholder="feat({platform}): add {problem}"
+          />
+          <span class="settings-hint">Use {platform} and {problem} as placeholders</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Platforms</label>
+          <div class="platform-toggles">
+            <label class="platform-toggle">
+              <input type="checkbox" id="toggle-leetcode" checked />
+              <span>LeetCode</span>
+            </label>
+            <label class="platform-toggle">
+              <input type="checkbox" id="toggle-gfg" checked />
+              <span>GeeksForGeeks</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <div class="settings-actions">
+        <button id="btn-settings-save" class="btn btn-primary">Save Settings</button>
+        <div id="settings-save-status" class="save-status"></div>
+      </div>
+    </div>
+
+    <!-- ========== HISTORY VIEW ========== -->
+    <div id="view-history" class="hidden">
+      <div class="view-header">
+        <button id="btn-history-back" class="btn-icon">← Back</button>
+        <span class="view-title">Sync History</span>
+      </div>
+      <section class="card">
+        <div id="history-body" class="history-body">
+          <p class="empty-state">No history yet. Your synced submissions will appear here.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="./popup.ts"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "grindsync-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "GrindSync 2.0.0 — Chrome extension and local daemon for automatic LeetCode & GeeksforGeeks synchronization to GitHub",
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev:backend",
+    "dev:backend": "npm run dev --workspace=@codesync/agent",
+    "dev:frontend": "npm run dev --workspace=@codesync/extension",
+    "build": "npm run build --workspace=@codesync/shared && npm run build --workspace=@codesync/agent && npm run build --workspace=@codesync/extension",
+    "build:shared": "npm run build --workspace=@codesync/shared",
+    "build:backend": "npm run build --workspace=@codesync/agent",
+    "build:frontend": "npm run build --workspace=@codesync/extension",
+    "start": "npm run start --workspace=@codesync/agent",
+    "start:backend": "npm run start --workspace=@codesync/agent",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
