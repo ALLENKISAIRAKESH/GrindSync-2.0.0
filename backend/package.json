@@ -1,6 +1,6 @@
 {
-  "name": "@codesync/agent",
-  "version": "0.1.0",
+  "name": "@codesync/backend",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
-  "name": "@codesync/extension",
-  "version": "1.0.0",
+  "name": "@codesync/frontend",
+  "version": "2.0.0",
   "description": "GrindSync — Auto-capture accepted LeetCode & GFG solutions and sync to GitHub",
   "private": true,
   "type": "module",
