@@ -20,6 +20,7 @@ shared/dist/
 
 # Non-shareable internal agent materials
 agent/
+packages/
 
 # OS & Editor files
 .DS_Store
